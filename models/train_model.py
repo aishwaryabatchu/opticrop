@@ -41,12 +41,61 @@ def run_training_pipeline():
     print("\nFirst 5 Records:")
     print(df.head())
 
-    
+
     # Check for missing values and fill/drop
     df = df.dropna()
     
     X = df[['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']]
     y = df['label']
+
+    
+    # ------------------ Univariate Analysis ------------------
+
+    fig, axes = plt.subplots(2, 4, figsize=(18, 10))
+
+    columns = [
+        "N",
+        "P",
+        "K",
+        "temperature",
+        "humidity",
+        "ph",
+        "rainfall"
+    ]
+
+    colors = [
+        "orange",
+        "blue",
+        "pink",
+        "green",
+        "purple",
+        "red",
+        "yellow"
+    ]
+
+    for i, col in enumerate(columns):
+        row = i // 4
+        col_index = i % 4
+
+        sns.histplot(
+            df[col],
+            kde=True,
+            color=colors[i],
+            ax=axes[row][col_index]
+        )
+
+        axes[row][col_index].set_title(col)
+
+    # Hide last empty subplot
+    axes[1][3].axis("off")
+
+    plt.suptitle("Distribution of Agricultural Conditions", fontsize=18)
+
+    plt.tight_layout()
+
+    plt.savefig(os.path.join(CHARTS_DIR, "univariate_analysis.png"), dpi=300)
+
+    plt.close()
     
     # 2. Preprocessing
     # Label Encoding for targets
