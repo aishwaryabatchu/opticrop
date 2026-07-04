@@ -38,6 +38,10 @@ def run_training_pipeline():
         
     df = pd.read_csv(DATASET_PATH)
     
+    print("\nFirst 5 Records:")
+    print(df.head())
+
+    
     # Check for missing values and fill/drop
     df = df.dropna()
     
