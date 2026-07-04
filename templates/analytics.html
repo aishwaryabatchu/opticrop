@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Research Analytics{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">Agricultural Research & Analytics</h2>
+        <p class="text-muted mb-0">Statistical insights and environmental correlations from model training and dataset samples</p>
+    </div>
+    <!-- Export Actions -->
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('download_predictions_csv') }}" class="btn btn-outline-success custom-btn-outline">
+            <i class="bi bi-filetype-csv me-1"></i> Export predictions CSV
+        </a>
+        <a href="{{ url_for('download_pdf_report') }}" class="btn btn-success custom-btn-success">
+            <i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF Report
+        </a>
+    </div>
+</div>
+
+<!-- Statistical Summary Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 p-3 dashboard-card mini-stat-card h-100" style="border-left-color: #1b4332 !important;">
+            <span class="text-muted small">Total Dataset Size</span>
+            <h4 class="fw-bold mt-1 text-success mb-0">2,200 <span class="fs-6 fw-normal text-muted">Rows</span></h4>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 p-3 dashboard-card mini-stat-card h-100" style="border-left-color: #40916c !important;">
+            <span class="text-muted small">Number of Crops Classed</span>
+            <h4 class="fw-bold mt-1 text-success mb-0">22 <span class="fs-6 fw-normal text-muted">Crops</span></h4>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 p-3 dashboard-card mini-stat-card h-100" style="border-left-color: #52b788 !important;">
+            <span class="text-muted small">Mean Annual Rainfall</span>
+            <h4 class="fw-bold mt-1 text-success mb-0">103.5 <span class="fs-6 fw-normal text-muted">mm</span></h4>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 p-3 dashboard-card mini-stat-card h-100" style="border-left-color: #74c69d !important;">
+            <span class="text-muted small">Optimal pH Centroid</span>
+            <h4 class="fw-bold mt-1 text-success mb-0">6.47 <span class="fs-6 fw-normal text-muted">pH</span></h4>
+        </div>
+    </div>
+</div>
+
+<!-- Tab Panel for Visualizations -->
+<div class="card border-0 p-4 dashboard-card mb-4">
+    <h5 class="fw-bold mb-4"><i class="bi bi-images text-success me-2"></i> Scientific Visualization Module</h5>
+    
+    <div class="row">
+        <!-- Visualization Nav Tabs -->
+        <div class="col-md-3 border-end">
+            <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="nav-link text-start active" id="v-pills-correlation-tab" data-bs-toggle="pill" data-bs-target="#v-pills-correlation" type="button" role="tab">
+                    <i class="bi bi-grid-3x3 me-2"></i> Correlation Heatmap
+                </button>
+                <button class="nav-link text-start" id="v-pills-features-tab" data-bs-toggle="pill" data-bs-target="#v-pills-features" type="button" role="tab">
+                    <i class="bi bi-bar-chart-steps me-2"></i> Feature Importance
+                </button>
+                <button class="nav-link text-start" id="v-pills-dist-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dist" type="button" role="tab">
+                    <i class="bi bi-bar-chart-fill me-2"></i> Crop Distribution
+                </button>
+                <button class="nav-link text-start" id="v-pills-nutrients-tab" data-bs-toggle="pill" data-bs-target="#v-pills-nutrients" type="button" role="tab">
+                    <i class="bi bi-activity me-2"></i> Soil Nutrients (NPK)
+                </button>
+                <button class="nav-link text-start" id="v-pills-climate-tab" data-bs-toggle="pill" data-bs-target="#v-pills-climate" type="button" role="tab">
+                    <i class="bi bi-cloud-rain-fill me-2"></i> Rainfall Analysis
+                </button>
+                <button class="nav-link text-start" id="v-pills-tempcrop-tab" data-bs-toggle="pill" data-bs-target="#v-pills-tempcrop" type="button" role="tab">
+                    <i class="bi bi-thermometer-half me-2"></i> Temp vs Crop
+                </button>
+                <button class="nav-link text-start" id="v-pills-humidity-tab" data-bs-toggle="pill" data-bs-target="#v-pills-humidity" type="button" role="tab">
+                    <i class="bi bi-water me-2"></i> Humidity Analysis
+                </button>
+                <button class="nav-link text-start" id="v-pills-models-tab" data-bs-toggle="pill" data-bs-target="#v-pills-models" type="button" role="tab">
+                    <i class="bi bi-cpu-fill me-2"></i> Model Comparison
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tab Content -->
+        <div class="col-md-9 p-3">
+            <div class="tab-content" id="v-pills-tabContent">
+                <!-- Correlation Heatmap -->
+                <div class="tab-pane fade show active text-center" id="v-pills-correlation" role="tabpanel">
+                    <h6 class="fw-bold mb-2">Pearson Correlation Matrix Heatmap</h6>
+                    <p class="text-muted small">Examines linear dependencies between Nitrogen, Phosphorus, Potassium, temperature, humidity, pH, and rainfall.</p>
+                    <img src="{{ url_for('static', filename='charts/correlation_heatmap.png') }}" class="img-fluid rounded border shadow-sm" alt="Correlation Heatmap" onerror="this.src='https://placehold.co/600x400?text=Run+Model+Training+to+Generate+Charts'">
+                </div>
+                
+                <!-- Feature Importance -->
+                <div class="tab-pane fade text-center" id="v-pills-features" role="tabpanel">
+                    <h6 class="fw-bold mb-2">Machine Learning Feature Importances</h6>
+                    <p class="text-muted small">Highlights which parameters have the highest information gain when classifying suitable crops.</p>
+                    <img src="{{ url_for('static', filename='charts/feature_importance.png') }}" class="img-fluid rounded border shadow-sm" alt="Feature Importance" onerror="this.src='https://placehold.co/600x400?text=Run+Model+Training+to+Generate+Charts'">
+                </div>
+
+                <!-- Crop Distribution -->
+                <div class="tab-pane fade text-center" id="v-pills-dist" role="tabpanel">
+                    <h6 class="fw-bold mb-2">Dataset Class Representation (Crop Labels)</h6>
+                    <p class="text-muted small">Checks dataset balance across the 22 agricultural crop categories (100 samples per class).</p>
+                    <img src="{{ url_for('static', filename='charts/crop_distribution_dataset.png') }}" class="img-fluid rounded border shadow-sm" alt="Crop Distribution" onerror="this.src='https://placehold.co/600x400?text=Run+Model+Training+to+Generate+Charts'">
+                </div>
+
+                <!-- Soil Nutrients -->
+                <div class="tab-pane fade text-center" id="v-pills-nutrients" role="tabpanel">
+                    <h6 class="fw-bold mb-2">Soil N, P, K Nutrient Ranges</h6>
+                    <p class="text-muted small">Boxplot representing the spread of Nitrogen (N), Phosphorus (P), and Potassium (K) across crops.</p>
+                    <img src="{{ url_for('static', filename='charts/soil_nutrient_distribution.png') }}" class="img-fluid rounded border shadow-sm" alt="Soil Nutrients Distribution" onerror="this.src='https://placehold.co/600x400?text=Run+Model+Training+to+Generate+Charts'">
+                </div>
+
+                <!-- Rainfall Analysis -->
+                <div class="tab-pane fade text-center" id="v-pills-climate" role="tabpanel">
+                    <h6 class="fw-bold mb-2">Rainfall Frequency & Density Curve</h6>
+                    <p class="text-muted small">Density histogram representing the typical precipitation requirements recorded in precision farming logs.</p>
+                    <img src="{{ url_for('static', filename='charts/rainfall_analysis.png') }}" class="img-fluid rounded border shadow-sm" alt="Rainfall Analysis" onerror="this.src='https://placehold.co/600x400?text=Run+Model+Training+to+Generate+Charts'">
+                </div>
+
+                <!-- Temp vs Crop -->
+                <div class="tab-pane fade text-center" id="v-pills-tempcrop" role="tabpanel">
+                    <h6 class="fw-bold mb-2">Temperature Spread per Crop Type</h6>
+                    <p class="text-muted small">Faceted scatter / bar ranges representing typical temperature spans suitable for successful seedling growth.</p>
+                    <img src="{{ url_for('static', filename='charts/temp_vs_crop.png') }}" class="img-fluid rounded border shadow-sm" alt="Temp vs Crop" onerror="this.src='https://placehold.co/600x400?text=Run+Model+Training+to+Generate+Charts'">
+                </div>
+
+                <!-- Humidity Analysis -->
+                <div class="tab-pane fade text-center" id="v-pills-humidity" role="tabpanel">
+                    <h6 class="fw-bold mb-2">Relative Humidity Distribution</h6>
+                    <p class="text-muted small">Seaborn kernel density plot representing the relative atmospheric humidity spread in the dataset.</p>
+                    <img src="{{ url_for('static', filename='charts/humidity_analysis.png') }}" class="img-fluid rounded border shadow-sm" alt="Humidity Analysis" onerror="this.src='https://placehold.co/600x400?text=Run+Model+Training+to+Generate+Charts'">
+                </div>
+
+                <!-- Model Comparison -->
+                <div class="tab-pane fade text-center" id="v-pills-models" role="tabpanel">
+                    <h6 class="fw-bold mb-2">Algorithm Cross-Validation Accuracy Comparison</h6>
+                    <p class="text-muted small">Benchmarking Random Forest, SVM, Naive Bayes, Decision Tree, and KNN test metrics.</p>
+                    <img src="{{ url_for('static', filename='charts/model_comparison.png') }}" class="img-fluid rounded border shadow-sm" alt="Model Comparison Graph" onerror="this.src='https://placehold.co/600x400?text=Run+Model+Training+to+Generate+Charts'">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

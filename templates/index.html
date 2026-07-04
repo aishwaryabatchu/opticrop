@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiCrop – Smart Agricultural Production Optimization Engine</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="landing-body">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top custom-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-tree-fill text-success me-2"></i>
+                <span class="fw-bold">Opti</span>Crop
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <!-- Dark Mode Toggle -->
+                    <li class="nav-item me-3">
+                        <button class="btn btn-link nav-link p-0" id="darkModeToggle" title="Toggle theme">
+                            <i class="bi bi-moon-stars-fill fs-5" id="darkModeIcon"></i>
+                        </button>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="btn btn-success custom-btn-success" href="{{ url_for('dashboard') }}">
+                                <i class="bi bi-grid-fill me-1"></i> Dashboard
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-success custom-btn-outline" href="{{ url_for('login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-success custom-btn-success" href="{{ url_for('register') }}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-white d-flex align-items-center">
+        <div class="container">
+            <div class="row align-items-center gy-5">
+                <div class="col-lg-6">
+                    <div class="hero-badge mb-3">
+                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6">
+                            <i class="bi bi-cpu-fill me-1 text-success"></i> Next-Gen Precision Agriculture
+                        </span>
+                    </div>
+                    <h1 class="display-4 fw-bold mb-4">Optimize Crop Yields with Machine Learning</h1>
+                    <p class="lead mb-4 opacity-90">OptiCrop analyzes soil nutrients and climate parameters to recommend the most compatible crops, evaluate environmental suitability, and empower farmers with data-driven insights.</p>
+                    <div class="d-flex gap-3">
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-success btn-lg px-4 py-3 custom-btn-success">
+                                Go to Dashboard <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn btn-success btn-lg px-4 py-3 custom-btn-success">
+                                Get Started <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                            <a href="#features" class="btn btn-outline-light btn-lg px-4 py-3 custom-btn-outline-white">
+                                Learn More
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="hero-image-wrapper p-3">
+                        <div class="hero-card glass-card p-4 text-start">
+                            <h5 class="fw-bold mb-3"><i class="bi bi-sliders me-2 text-success"></i> Live Soil Assessment</h5>
+                            <div class="row g-2 mb-3">
+                                <div class="col-4">
+                                    <div class="param-card text-center p-2 rounded">
+                                        <div class="text-muted small">Nitrogen (N)</div>
+                                        <div class="fw-bold text-success">85 kg/ha</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="param-card text-center p-2 rounded">
+                                        <div class="text-muted small">Phosphorus (P)</div>
+                                        <div class="fw-bold text-success">45 kg/ha</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="param-card text-center p-2 rounded">
+                                        <div class="text-muted small">Potassium (K)</div>
+                                        <div class="fw-bold text-success">38 kg/ha</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="param-card p-2 rounded d-flex align-items-center justify-content-between">
+                                        <span class="small text-muted">Temp</span>
+                                        <span class="fw-bold">24.2°C</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="param-card p-2 rounded d-flex align-items-center justify-content-between">
+                                        <span class="small text-muted">pH level</span>
+                                        <span class="fw-bold text-warning">6.5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="my-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="text-muted small">Recommended Crop</div>
+                                    <h4 class="fw-bold text-success mb-0">Rice</h4>
+                                </div>
+                                <span class="badge bg-success-subtle text-success p-2">
+                                    <i class="bi bi-shield-check me-1"></i> 98.4% Match
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5 section-features">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">System Capabilities</h2>
+                <p class="text-muted col-lg-6 mx-auto">Explore the integrated features designed for farmers, agronomists, and researchers to optimize agricultural decision-making.</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm p-4 feature-card">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-magic fs-2 text-success"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">Crop Recommendation</h4>
+                        <p class="text-muted mb-0">Input your N-P-K ratios, pH levels, and climate parameters to receive an instant crop recommendation based on 5 trained ML models.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm p-4 feature-card">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-shield-shaded fs-2 text-success"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">Suitability Assessment</h4>
+                        <p class="text-muted mb-0">Select a specific target crop and evaluate its exact compatibility percentage against your unique environment, highlighting nutrient deficiencies.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm p-4 feature-card">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-graph-up-arrow fs-2 text-success"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">Research & Analytics</h4>
+                        <p class="text-muted mb-0">Explore detailed climate-nutrient distributions, Pearson correlation heatmaps, statistical insights, and download PDF or CSV logs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5 bg-light-section">
+        <div class="container py-4">
+            <div class="row align-items-center gy-4">
+                <div class="col-lg-6">
+                    <h2 class="fw-bold mb-3">Empowering Farmers with Predictive Analytics</h2>
+                    <p class="text-muted mb-3">OptiCrop combines soil science and environmental metrics with modern machine learning algorithms. By cross-evaluating Soil Nutrients (Nitrogen, Phosphorus, Potash) along with Climatic Factors (Temperature, Relative Humidity, pH, and Rainfall), our engine removes guesswork from planting decisions.</p>
+                    <p class="text-muted mb-4">Our champion model automatically compares Random Forests, Decision Trees, KNN, Naive Bayes, and Support Vector Machines to output the most statistically reliable prediction with full precision metrics.</p>
+                    <div class="d-flex gap-4">
+                        <div>
+                            <h3 class="fw-bold text-success mb-0">5</h3>
+                            <span class="text-muted small">ML Classifiers</span>
+                        </div>
+                        <div class="vr"></div>
+                        <div>
+                            <h3 class="fw-bold text-success mb-0">22</h3>
+                            <span class="text-muted small">Compatible Crops</span>
+                        </div>
+                        <div class="vr"></div>
+                        <div>
+                            <h3 class="fw-bold text-success mb-0">2,200</h3>
+                            <span class="text-muted small">Dataset Records</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="p-3 bg-white shadow-sm rounded border border-light">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-fill me-2 text-success"></i> Multi-Model Validation Accuracy</h5>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1 small">
+                                <span>Random Forest</span>
+                                <span class="fw-bold">99.1%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 99.1%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1 small">
+                                <span>Support Vector Machine (SVM)</span>
+                                <span class="fw-bold">97.8%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 97.8%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1 small">
+                                <span>K-Nearest Neighbors (KNN)</span>
+                                <span class="fw-bold">96.5%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 96.5%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1 small">
+                                <span>Decision Tree</span>
+                                <span class="fw-bold">96.0%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 96%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-between mb-1 small">
+                                <span>Naive Bayes</span>
+                                <span class="fw-bold">95.2%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: 95.2%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4 border-top">
+        <div class="container text-center text-muted">
+            <p class="mb-0">&copy; 2026 OptiCrop – Smart Agricultural Production Optimization Engine. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

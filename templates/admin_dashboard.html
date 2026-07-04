@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}System Administration{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold mb-0">System Administration</h2>
+    <p class="text-muted">Manage system users, monitor logs, and retrain machine learning models</p>
+</div>
+
+<!-- Model Management Section -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-5">
+        <div class="card border-0 p-4 dashboard-card h-100">
+            <h5 class="fw-bold mb-3"><i class="bi bi-cpu text-success me-2"></i> Model Retraining Engine</h5>
+            <div class="mb-4 bg-light p-3 rounded border border-light-subtle">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <span class="small text-muted">Champion Model</span>
+                        <div class="fw-bold text-success" id="championModelName">{{ metrics.best_model if metrics else 'Random Forest (Pending Training)' }}</div>
+                    </div>
+                    <div class="col-6">
+                        <span class="small text-muted">Test Accuracy</span>
+                        <div class="fw-bold text-success" id="championAccuracy">{{ (metrics.accuracy * 100)|round(2) if metrics else '0.00' }}%</div>
+                    </div>
+                </div>
+            </div>
+            <p class="small text-muted">Retraining scans the current <code>Crop_recommendation.csv</code>, scales inputs, and fits Random Forest, Decision Tree, Naive Bayes, KNN, and SVM models. The system will automatically deploy the one with the highest test accuracy.</p>
+            
+            <form action="{{ url_for('retrain_model_route') }}" method="POST" class="needs-validation show-loader mt-auto" data-loader-msg="Fitting 5 ML models and generating analytical charts... Please wait." novalidate>
+                <button type="submit" class="btn btn-success w-100 py-2 custom-btn-success">
+                    <i class="bi bi-arrow-repeat me-1"></i> Trigger Model Retraining
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create User Account Section -->
+    <div class="col-lg-7">
+        <div class="card border-0 p-4 dashboard-card h-100">
+            <h5 class="fw-bold mb-3"><i class="bi bi-person-plus text-success me-2"></i> Register New User Account</h5>
+            <form action="{{ url_for('admin_create_user') }}" method="POST" class="needs-validation" novalidate>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="admin_username" class="form-label small fw-medium">Username</label>
+                        <input type="text" class="form-control" id="admin_username" name="username" placeholder="Enter username" required minlength="4">
+                        <div class="invalid-feedback">At least 4 characters.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="admin_role" class="form-label small fw-medium">Access Role</label>
+                        <select class="form-select" id="admin_role" name="role" required>
+                            <option value="" disabled selected>Select role</option>
+                            <option value="Farmer">Farmer</option>
+                            <option value="Researcher">Researcher</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                        <div class="invalid-feedback">Select an access role.</div>
+                    </div>
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-12">
+                        <label for="admin_password" class="form-label small fw-medium">Password</label>
+                        <input type="password" class="form-control" id="admin_password" name="password" placeholder="Enter password" required minlength="6">
+                        <div class="invalid-feedback">At least 6 characters.</div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success custom-btn-success px-4">
+                    <i class="bi bi-check-circle me-1"></i> Create Account
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- User Management Table -->
+<div class="card border-0 p-4 dashboard-card mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-people text-success me-2"></i> User Directory</h5>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle custom-table mb-0">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Created At</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                    <tr>
+                        <td class="fw-bold text-success">{{ u.username }}</td>
+                        <td>
+                            {% set role_badges = {'Admin': 'bg-success', 'Researcher': 'bg-primary', 'Farmer': 'bg-info'} %}
+                            <span class="badge {{ role_badges.get(u.role, 'bg-secondary') }}">{{ u.role }}</span>
+                        </td>
+                        <td class="small text-muted">{{ u.created_at }}</td>
+                        <td class="text-end">
+                            {% if u.id != current_user.id %}
+                                <form action="{{ url_for('admin_delete_user_route', user_id=u.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this user account?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm border-0">
+                                        <i class="bi bi-trash3-fill"></i> Delete
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted small italic">Current User</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Audit logs -->
+<div class="card border-0 p-4 dashboard-card mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-list-stars text-success me-2"></i> System Logs & Audit Trail</h5>
+    <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+        <table class="table table-sm table-hover align-middle custom-table mb-0" style="font-size: 0.85rem;">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Action</th>
+                    <th>User</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                    <tr>
+                        <td class="text-muted small" style="width: 15%">{{ log.created_at }}</td>
+                        <td class="fw-bold text-success" style="width: 15%">{{ log.action }}</td>
+                        <td style="width: 15%">{{ log.username if log.username else 'System/Anonymous' }}</td>
+                        <td class="text-muted">{{ log.details }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

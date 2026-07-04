@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Crop Recommendation{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold mb-0">Smart Crop Recommendation</h2>
+    <p class="text-muted">Enter environmental parameters to find the most suitable crop to cultivate</p>
+</div>
+
+<div class="row g-4">
+    <!-- Input Form Column -->
+    <div class="col-lg-5">
+        <div class="card border-0 p-4 dashboard-card h-100">
+            <h5 class="fw-bold mb-3"><i class="bi bi-sliders text-success me-2"></i> Soil & Climate Inputs</h5>
+            <form action="{{ url_for('recommendation') }}" method="POST" class="needs-validation show-loader" data-loader-msg="Running ML models to recommend best crops..." novalidate>
+                <!-- N, P, K -->
+                <div class="row g-2 mb-3">
+                    <div class="col-4">
+                        <label for="N" class="form-label small fw-medium">
+                            Nitrogen (N)
+                            <i class="bi bi-info-circle-fill info-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" title="Soil Nitrogen level (0-150 kg/ha). Essential for leaf growth and green color."></i>
+                        </label>
+                        <input type="number" step="any" class="form-control" id="N" name="N" placeholder="e.g. 80" min="0" max="200" required value="{{ inputs.N if inputs else '' }}">
+                        <div class="invalid-feedback">0-200</div>
+                    </div>
+                    <div class="col-4">
+                        <label for="P" class="form-label small fw-medium">
+                            Phosphorus (P)
+                            <i class="bi bi-info-circle-fill info-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" title="Soil Phosphorus level (0-150 kg/ha). Key for root establishment and flowering."></i>
+                        </label>
+                        <input type="number" step="any" class="form-control" id="P" name="P" placeholder="e.g. 45" min="0" max="200" required value="{{ inputs.P if inputs else '' }}">
+                        <div class="invalid-feedback">0-200</div>
+                    </div>
+                    <div class="col-4">
+                        <label for="K" class="form-label small fw-medium">
+                            Potassium (K)
+                            <i class="bi bi-info-circle-fill info-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" title="Soil Potassium level (0-300 kg/ha). Boosts disease resistance and water regulation."></i>
+                        </label>
+                        <input type="number" step="any" class="form-control" id="K" name="K" placeholder="e.g. 40" min="0" max="300" required value="{{ inputs.K if inputs else '' }}">
+                        <div class="invalid-feedback">0-300</div>
+                    </div>
+                </div>
+
+                <!-- Temperature & Humidity -->
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label for="temperature" class="form-label small fw-medium">
+                            Temperature (°C)
+                            <i class="bi bi-info-circle-fill info-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" title="Average temperature (-10 to 60°C) of the region."></i>
+                        </label>
+                        <input type="number" step="any" class="form-control" id="temperature" name="temperature" placeholder="e.g. 24.5" min="-10" max="60" required value="{{ inputs.temperature if inputs else '' }}">
+                        <div class="invalid-feedback">-10 to 60°C</div>
+                    </div>
+                    <div class="col-6">
+                        <label for="humidity" class="form-label small fw-medium">
+                            Humidity (%)
+                            <i class="bi bi-info-circle-fill info-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" title="Relative humidity percentage (0-100%)."></i>
+                        </label>
+                        <input type="number" step="any" class="form-control" id="humidity" name="humidity" placeholder="e.g. 82" min="0" max="100" required value="{{ inputs.humidity if inputs else '' }}">
+                        <div class="invalid-feedback">0-100%</div>
+                    </div>
+                </div>
+
+                <!-- pH & Rainfall -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <label for="ph" class="form-label small fw-medium">
+                            Soil pH
+                            <i class="bi bi-info-circle-fill info-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" title="Acidity/Alkalinity level of the soil (0.0 - 14.0). Most crops prefer 5.5 - 7.5."></i>
+                        </label>
+                        <input type="number" step="any" class="form-control" id="ph" name="ph" placeholder="e.g. 6.5" min="0" max="14" required value="{{ inputs.ph if inputs else '' }}">
+                        <div class="invalid-feedback">0.0 to 14.0</div>
+                    </div>
+                    <div class="col-6">
+                        <label for="rainfall" class="form-label small fw-medium">
+                            Rainfall (mm)
+                            <i class="bi bi-info-circle-fill info-tooltip" data-bs-toggle="tooltip" data-bs-placement="top" title="Expected seasonal rainfall level (0 - 1000 mm)."></i>
+                        </label>
+                        <input type="number" step="any" class="form-control" id="rainfall" name="rainfall" placeholder="e.g. 200" min="0" max="1000" required value="{{ inputs.rainfall if inputs else '' }}">
+                        <div class="invalid-feedback">0 to 1000 mm</div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success flex-grow-1 py-2 custom-btn-success">
+                        <i class="bi bi-cpu-fill me-1"></i> Recommend Crop
+                    </button>
+                    <a href="{{ url_for('recommendation') }}" class="btn btn-outline-secondary px-3">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Output Result Column -->
+    <div class="col-lg-7">
+        {% if result %}
+            <div class="card border-0 shadow-sm p-4 dashboard-card h-100">
+                <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+                    <div>
+                        <div class="text-success small fw-bold text-uppercase tracking-wider">Engine Recommendation</div>
+                        <h2 class="fw-bold mb-0 text-success">{{ result.crop_name }}</h2>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-success-subtle text-success p-2 fs-6">
+                            <i class="bi bi-shield-check me-1"></i> {{ result.confidence_score }}% Confidence
+                        </span>
+                        <div class="text-muted small mt-1">Suitability Rating: <strong class="text-success">{{ result.suitability_rating }}</strong></div>
+                    </div>
+                </div>
+
+                <!-- Crop Visual Representation -->
+                <div class="text-center bg-light p-4 rounded mb-4 d-flex align-items-center justify-content-center" style="height: 160px; min-height: 160px;">
+                    <!-- Standard vector representation for crops to prevent broken images -->
+                    <div class="crop-vector-graphic text-center">
+                        <i class="bi bi-flower3 text-success" style="font-size: 4rem; display: block;"></i>
+                        <span class="text-muted small">{{ result.desc }}</span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded border border-light-subtle h-100">
+                            <div class="text-muted small"><i class="bi bi-calendar2-range-fill text-success me-1"></i> Sowing Season</div>
+                            <div class="fw-bold mt-1">{{ result.season }}</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded border border-light-subtle h-100">
+                            <div class="text-muted small"><i class="bi bi-speedometer2 text-success me-1"></i> Yield Potential</div>
+                            <div class="fw-bold mt-1">{{ result.yield_potential }} <span class="fs-6 fw-normal text-muted">tons/hectare</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="fw-bold text-success mb-2"><i class="bi bi-droplet-fill text-success me-1"></i> Water & Irrigation suggestions</h6>
+                    <p class="small text-muted mb-0">{{ result.irrigation }}</p>
+                </div>
+
+                <div>
+                    <h6 class="fw-bold text-success mb-2"><i class="bi bi-funnel-fill text-success me-1"></i> Nutrient & Fertilizer Schedule</h6>
+                    <p class="small text-muted mb-0">{{ result.fertilizer }}</p>
+                </div>
+            </div>
+        {% else %}
+            <div class="card border-0 p-5 dashboard-card h-100 d-flex flex-column align-items-center justify-content-center text-center text-muted">
+                <i class="bi bi-cpu fs-1 mb-3 text-success bg-success bg-opacity-10 p-3 rounded-circle"></i>
+                <h4 class="fw-bold">Awaiting Inputs</h4>
+                <p class="col-md-9 mx-auto">Fill in the soil nutrient levels and climatic parameters on the left, then click <strong>Recommend Crop</strong> to execute our prediction engine.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
